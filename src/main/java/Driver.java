@@ -18,10 +18,10 @@ public class Driver {
 
         //((LocalDataMapper)instance).showall();
 
-        String hiThere = (String) instance.retrieve("hi", String.class);
+        String hiThere = (String) instance.get("hi", String.class);
         System.out.println(hiThere);
 
-        String[] two = (String[]) instance.retrieve("two", String[].class);
+        String[] two = (String[]) instance.get("two", String[].class);
         System.out.println(Arrays.toString(two));
     }
 }

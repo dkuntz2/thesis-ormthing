@@ -1,5 +1,7 @@
 package co.kuntz.sqliteEngine.core;
 
+import java.util.Map;
+
 /**
  * Our goal tonight is to fuck with SQLite as much as possible, mainly because
  * it's the only thing you can use on Android without a huge hassle, but I want
@@ -31,7 +33,12 @@ package co.kuntz.sqliteEngine.core;
 
 public abstract class DataMapper {
     private static DataMapper instance;
-    static DataMapperFactory factory;
+
+    // FUCK!!!!
+    // TODO: find a better way to deal with this, and make it _not_ public
+    //       but it also needs to be able to be changed by a file outside of
+    //       this package......
+    public static DataMapperFactory factory;
 
     public static DataMapper getInstance() {
         if (instance == null) {
@@ -45,8 +52,12 @@ public abstract class DataMapper {
         return instance;
     }
 
-    public abstract void insert(String itemName, Object obj);
-    public abstract Object retrieve(String itemName, Class<?> klass);
+    // TODO: convert insert/delete to booleans?
+    public abstract void put(String itemName, Object obj);
+    public abstract Object get(String itemName, Class<?> klass);
+    public abstract String getString(String itemName);
+    public abstract void delete(String itemName);
+    public abstract Map<String, String> getAll();
 
     interface DataMapperFactory {
         public DataMapper createMapper();
