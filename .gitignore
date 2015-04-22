@@ -1,0 +1,10 @@
+# idea things
+*.iml
+*.ipr
+*.iws
+.idea
+*.db
+*.swp
+.gradle/
+build/
+.DS_Store

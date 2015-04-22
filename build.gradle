@@ -1,0 +1,13 @@
+apply plugin: "application"
+apply plugin: "java"
+
+mainClassName = 'co.kuntz.sqliteEngine.Driver'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.xerial:sqlite-jdbc:3.8.7'
+    compile 'com.google.code.gson:gson:2.3.1'
+}
