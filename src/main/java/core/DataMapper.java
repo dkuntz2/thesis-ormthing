@@ -45,7 +45,7 @@ public abstract class DataMapper {
         return instance;
     }
 
-    public abstract void insert(String itemName, String jsonData);
+    public abstract void insert(String itemName, Object obj);
     public abstract Object retrieve(String itemName, Class<?> klass);
 
     interface DataMapperFactory {
