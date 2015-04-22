@@ -1,6 +1,7 @@
 package co.kuntz.sqliteEngine;
 
 import co.kuntz.sqliteEngine.core.*;
+import java.util.Arrays;
 
 public class Driver {
     public static void main(String[] args) {
@@ -11,10 +12,16 @@ public class Driver {
 
         //String hiThere = (String) instance.retrieve("hi", String.class);
 
-        instance.insert("one", "Some fucking string thing");
-        instance.insert("two", new String[] {"Hello", "World", "Array!"});
-        instance.insert("three", "This should be a map...");
+        //instance.insert("one", "Some fucking string thing");
+        //instance.insert("two", new String[] {"Hello", "World", "Array!"});
+        //instance.insert("three", "This should be a map...");
 
-        ((LocalDataMapper)instance).showall();
+        //((LocalDataMapper)instance).showall();
+
+        String hiThere = (String) instance.retrieve("hi", String.class);
+        System.out.println(hiThere);
+
+        String[] two = (String[]) instance.retrieve("two", String[].class);
+        System.out.println(Arrays.toString(two));
     }
 }
