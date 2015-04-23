@@ -10,9 +10,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.Before;
 
-import java.security.SecureRandom;
-import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.*;
 
 public class LocalDataMapperTest {
     @Before
@@ -67,5 +65,45 @@ public class LocalDataMapperTest {
         assertArrayEquals(new boolean[] {true, false, true}, bools);
         assertArrayEquals(new String[] {"first", "second", "third"}, strings);
         assertArrayEquals(new char[] {'a', 'b', 'c'}, chars);
+    }
+
+    class BundleOfJunk {
+        public int integer;
+        public String string;
+        public List<String> strings;
+        public Map<Integer, String> map;
+
+        @Override public boolean equals(Object o) {
+            if (o == null || !(o instanceof BundleOfJunk)) {
+                return false;
+            }
+
+            BundleOfJunk that = (BundleOfJunk) o;
+
+            return that.integer == this.integer &&
+                that.string.equals(this.string) &&
+                that.strings.equals(this.strings) &&
+                that.map.equals(this.map);
+        }
+    }
+
+    @Test
+    public void testArbirtraryClass() {
+        BundleOfJunk a = new BundleOfJunk();
+        a.integer = 4;
+        a.string = "wtf?";
+        a.strings = new ArrayList<String>();
+        a.strings.add("a");
+        a.strings.add("b");
+        a.strings.add("c");
+        a.map = new HashMap<Integer, String>();
+        a.map.put(1, "Hello World");
+        a.map.put(2, "Goodbye World");
+
+        DataMapper instance = DataMapper.getInstance();
+        instance.put("junk", a);
+
+        // FUCK YOU JUNIT!
+        assertTrue(a.equals(instance.get("junk", BundleOfJunk.class)));
     }
 }
