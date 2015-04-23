@@ -57,7 +57,9 @@ public class LocalDataMapper extends DataMapper {
         try {
             retrieveStatement.setString(1, name);
             ResultSet result = retrieveStatement.executeQuery();
-            result.next();
+            if (!result.next()) {
+                return null;
+            }
 
             return gson.fromJson(result.getString("object"), klass);
         } catch (Throwable t) {
@@ -69,7 +71,9 @@ public class LocalDataMapper extends DataMapper {
         try {
             retrieveStatement.setString(1, name);
             ResultSet result = retrieveStatement.executeQuery();
-            result.next();
+            if (!result.next()) {
+                return null;
+            }
 
             return result.getString("object");
         } catch (Throwable t) {

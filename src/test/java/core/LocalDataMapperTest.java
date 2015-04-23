@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.junit.Before;
 
@@ -105,5 +106,23 @@ public class LocalDataMapperTest {
 
         // FUCK YOU JUNIT!
         assertTrue(a.equals(instance.get("junk", BundleOfJunk.class)));
+    }
+
+    @Test
+    public void testDeletion() {
+        DataMapper instance = DataMapper.getInstance();
+        instance.put("deleteme", "whotfcares?");
+        instance.delete("deleteme");
+
+        assertNull(instance.get("deleteme", String.class));
+        assertNull(instance.getString("deleteme"));
+    }
+
+    @Test
+    public void testReturnsNullForNonExistantData() {
+        DataMapper instance = DataMapper.getInstance();
+
+        assertNull(instance.getString("notathing"));
+        assertNull(instance.get("notathing", Object.class));
     }
 }
