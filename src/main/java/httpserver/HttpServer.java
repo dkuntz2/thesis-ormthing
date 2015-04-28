@@ -15,7 +15,7 @@ import java.net.SocketException;
  * and might not be the best base server for one to use. It exists solely to
  * provide an existing mechanism for using the rest of the httpserver package.
  */
-public class HttpServer extends HttpHandler {
+public class HttpServer extends HttpHandler implements Runnable {
     public static final int defaultPort = 8000;
 
     /** The server's name */
@@ -30,6 +30,8 @@ public class HttpServer extends HttpHandler {
     public int port;
     private ServerSocket socket = null;
     private HttpRouter router;
+
+    private boolean running = true;
 
 
     /**
@@ -87,7 +89,7 @@ public class HttpServer extends HttpHandler {
             socket.setReuseAddress(true);
             socket.bind(new InetSocketAddress(getPort()));
 
-            while (true) {
+            while (running) {
                 Socket connection = null;
                 try {
                     connection = socket.accept();
@@ -206,5 +208,9 @@ public class HttpServer extends HttpHandler {
      */
     public int getPort() {
         return port;
+    }
+
+    public void stop() {
+        running = false;
     }
 }

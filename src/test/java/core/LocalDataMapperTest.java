@@ -10,21 +10,28 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.After;
 
 import java.util.*;
 
 public class LocalDataMapperTest {
+    private DataMapper instance;
+
     @Before
     public void setup() {
-        LocalDataMapper.dbName = ":memory:";
+        //DataMapper.dbName = ":memory:";
+        //DataMapper.factory = LocalDataMapper.getDataMapperFactory();
 
-        LocalDataMapper.setDataMapperFactory();
+        instance = LocalDataMapper.getDataMapperFactory(":memory:").createMapper();
+    }
+
+    @After
+    public void teardown() {
+        //((LocalDataMapper) instance).purge();
     }
 
     @Test
     public void testPrimitives() {
-        DataMapper instance = DataMapper.getInstance();
-
         // TODO: don't hard code these. Turn them into variables.
         instance.put("one", 1);
         instance.put("twotwo", 2.2);
@@ -47,8 +54,6 @@ public class LocalDataMapperTest {
 
     @Test
     public void testArrays() {
-        DataMapper instance = DataMapper.getInstance();
-
         instance.put("ints", new int[] {1, 2, 3});
         instance.put("doubles", new double[] {1.1, 2.2, 3.3});
         instance.put("booleans", new boolean[] {true, false, true});
@@ -101,7 +106,6 @@ public class LocalDataMapperTest {
         a.map.put(1, "Hello World");
         a.map.put(2, "Goodbye World");
 
-        DataMapper instance = DataMapper.getInstance();
         instance.put("junk", a);
 
         // FUCK YOU JUNIT!
@@ -110,7 +114,6 @@ public class LocalDataMapperTest {
 
     @Test
     public void testDeletion() {
-        DataMapper instance = DataMapper.getInstance();
         instance.put("deleteme", "whotfcares?");
         instance.delete("deleteme");
 
@@ -120,8 +123,6 @@ public class LocalDataMapperTest {
 
     @Test
     public void testReturnsNullForNonExistantData() {
-        DataMapper instance = DataMapper.getInstance();
-
         assertNull(instance.getString("notathing"));
         assertNull(instance.get("notathing", Object.class));
     }

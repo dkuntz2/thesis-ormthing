@@ -81,6 +81,8 @@ public class HttpRequest implements Runnable {
 
     private List<String> varargs = new ArrayList<>();
 
+    private String requestBody;
+
 
     /**
      * Used to parse out an HTTP request provided a Socket and figure out the
@@ -210,7 +212,9 @@ public class HttpRequest implements Runnable {
 
             requestBuilder.append(b.toString());
 
-            String[] data = b.toString().split("&");
+            requestBody = b.toString();
+
+            String[] data = requestBody.split("&");
             getParams().putAll(parseInputData(data));
         }
 
@@ -496,6 +500,10 @@ public class HttpRequest implements Runnable {
     }
     public HttpRouter getRouter() {
         return router;
+    }
+
+    public String getRequestBody() {
+        return requestBody;
     }
 
     @Override

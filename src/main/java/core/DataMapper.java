@@ -39,6 +39,7 @@ public abstract class DataMapper {
     //       but it also needs to be able to be changed by a file outside of
     //       this package......
     public static DataMapperFactory factory;
+    public static String dbName;
 
     public static DataMapper getInstance() {
         if (instance == null) {
@@ -59,7 +60,7 @@ public abstract class DataMapper {
     public abstract void delete(String itemName);
     public abstract Map<String, String> getAll();
 
-    interface DataMapperFactory {
+    public interface DataMapperFactory {
         public DataMapper createMapper();
     }
 }

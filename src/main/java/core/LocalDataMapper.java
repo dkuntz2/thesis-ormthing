@@ -12,9 +12,11 @@ public class LocalDataMapper extends DataMapper {
     private PreparedStatement retrieveStatement;
     private PreparedStatement deleteStatement;
 
-    public static String dbName = "test";
-
     private LocalDataMapper() {
+        this(DataMapper.dbName);
+    }
+
+    private LocalDataMapper(String dbName) {
         try {
             Class.forName("org.sqlite.JDBC");
 
@@ -35,18 +37,32 @@ public class LocalDataMapper extends DataMapper {
         }
     }
 
-    public static void setDataMapperFactory() {
-        DataMapper.factory = new DataMapper.DataMapperFactory() {
+    public static DataMapper.DataMapperFactory getDataMapperFactory(final String name) {
+        return new DataMapper.DataMapperFactory() {
             @Override public DataMapper createMapper() {
-                return new LocalDataMapper();
+                return new LocalDataMapper(name);
             }
         };
+    }
+
+    public static DataMapper.DataMapperFactory getDataMapperFactory() {
+        return getDataMapperFactory(DataMapper.dbName);
     }
 
     public void put(String name, Object obj) {
         try {
             insertStatement.setString(1, name);
             insertStatement.setString(2, gson.toJson(obj));
+            insertStatement.executeUpdate();
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    public void putRaw(String name, String obj) {
+        try {
+            insertStatement.setString(1, name);
+            insertStatement.setString(2, obj);
             insertStatement.executeUpdate();
         } catch (Throwable t) {
             throw new RuntimeException(t);
@@ -106,13 +122,11 @@ public class LocalDataMapper extends DataMapper {
         }
     }
 
-    // TESTING: TODO: delete this
-    public void showall() {
+    public void purge() {
         try {
-            ResultSet results = connection.createStatement().executeQuery("select * from items");
-            while (results.next()) {
-                System.out.println(results.getString("name") + " -> " + results.getString("object"));
-            }
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("drop table items");
+            stmt.executeUpdate("create table if not exists items(name text primary key, object text)");
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
