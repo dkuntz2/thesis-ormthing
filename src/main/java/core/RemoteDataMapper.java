@@ -88,7 +88,13 @@ public class RemoteDataMapper extends DataMapper {
     }
 
     public String getString(String item) {
-        return remoteRequest(RequestMethod.GET, "get/" + item);
+        String obj = remoteRequest(RequestMethod.GET, "get/" + item);
+
+        if (obj.equals("null")) {
+            obj = null;
+        }
+
+        return obj;
     }
 
     public void delete(String item) {

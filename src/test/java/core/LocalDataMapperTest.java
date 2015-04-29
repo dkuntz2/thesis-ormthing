@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.junit.Before;
-import org.junit.After;
 
 import java.util.*;
 
@@ -19,15 +18,7 @@ public class LocalDataMapperTest {
 
     @Before
     public void setup() {
-        //DataMapper.dbName = ":memory:";
-        //DataMapper.factory = LocalDataMapper.getDataMapperFactory();
-
         instance = LocalDataMapper.getDataMapperFactory(":memory:").createMapper();
-    }
-
-    @After
-    public void teardown() {
-        //((LocalDataMapper) instance).purge();
     }
 
     @Test

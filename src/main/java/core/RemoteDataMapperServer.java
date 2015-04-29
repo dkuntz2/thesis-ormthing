@@ -26,6 +26,9 @@ public class RemoteDataMapperServer extends HttpServer {
         get(new Route("/get/{item}") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
                 String item = dataMapper.getString(request.getParam("item"));
+                if (item == null) {
+                    item = "null";
+                }
                 response.setBody(item);
             }
         });
