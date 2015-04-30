@@ -32,11 +32,10 @@ import java.util.Map;
  */
 
 public interface DataMapper {
-    // TODO: convert insert/delete to booleans?
-    public void put(String itemName, Object obj);
+    public boolean put(String itemName, Object obj);
     public Object get(String itemName, Class<?> klass);
     public String getString(String itemName);
-    public void delete(String itemName);
+    public boolean delete(String itemName);
     public Map<String, String> getAll();
 
     public interface DataMapperFactory {

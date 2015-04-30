@@ -81,8 +81,8 @@ public class RemoteDataMapper implements DataMapper {
     }
 
 
-    public void put(String itemName, Object obj) {
-        remoteRequest(RequestMethod.POST, "put/" + itemName, obj);
+    public boolean put(String itemName, Object obj) {
+        return Boolean.parseBoolean(remoteRequest(RequestMethod.POST, "put/" + itemName, obj));
     }
 
     public Object get(String item, Class<?> klass) {
@@ -99,8 +99,8 @@ public class RemoteDataMapper implements DataMapper {
         return obj;
     }
 
-    public void delete(String item) {
-        remoteRequest(RequestMethod.DELETE, "delete/" + item);
+    public boolean delete(String item) {
+        return Boolean.parseBoolean(remoteRequest(RequestMethod.DELETE, "delete/" + item));
     }
 
     public Map<String, String> getAll() {

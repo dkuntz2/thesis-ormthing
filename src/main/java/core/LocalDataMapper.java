@@ -51,21 +51,15 @@ public class LocalDataMapper implements DataMapper {
         return getDataMapperFactory(DEFAULT_NAME);
     }
 
-    public void put(String name, Object obj) {
-        try {
-            insertStatement.setString(1, name);
-            insertStatement.setString(2, gson.toJson(obj));
-            insertStatement.executeUpdate();
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
+    public boolean put(String name, Object obj) {
+        return putRaw(name, gson.toJson(obj));
     }
 
-    public void putRaw(String name, String obj) {
+    public boolean putRaw(String name, String obj) {
         try {
             insertStatement.setString(1, name);
             insertStatement.setString(2, obj);
-            insertStatement.executeUpdate();
+            return insertStatement.executeUpdate() == 1;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -99,10 +93,10 @@ public class LocalDataMapper implements DataMapper {
         }
     }
 
-    public void delete(String itemName) {
+    public boolean delete(String itemName) {
         try {
             deleteStatement.setString(1, itemName);
-            deleteStatement.executeUpdate();
+            return deleteStatement.executeUpdate() == 1;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }

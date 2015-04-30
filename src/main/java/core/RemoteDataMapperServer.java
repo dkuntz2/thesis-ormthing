@@ -9,6 +9,7 @@ public class RemoteDataMapperServer extends HttpServer {
     public static final String DEFAULT_NAME = "remote.db";
 
     private DataMapper dataMapper;
+    private Gson gson = new Gson();
 
     public RemoteDataMapperServer() {
         this(DEFAULT_NAME, DEFAULT_PORT);
@@ -38,9 +39,9 @@ public class RemoteDataMapperServer extends HttpServer {
                 try {
                     String itemName = request.getParam("item");
                     String obj = URLDecoder.decode(request.getParam("object"), "UTF-8");
-                    ((LocalDataMapper) dataMapper).putRaw(itemName, obj);
+                    boolean added = ((LocalDataMapper) dataMapper).putRaw(itemName, obj);
 
-                    response.noContent();
+                    response.setBody(gson.toJson(added));
                 } catch (Throwable t) {
                     throw new RuntimeException(t);
                 }
@@ -49,14 +50,13 @@ public class RemoteDataMapperServer extends HttpServer {
 
         delete(new Route("/delete/{item}") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
-                dataMapper.delete(request.getParam("item"));
-                response.noContent();
+                boolean deleted = dataMapper.delete(request.getParam("item"));
+                response.setBody(gson.toJson(deleted));
             }
         });
 
         get(new Route("/getall") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
-                Gson gson = new Gson();
                 response.setBody(gson.toJson(dataMapper.getAll()));
             }
         });
