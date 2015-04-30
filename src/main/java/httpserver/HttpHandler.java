@@ -179,7 +179,7 @@ public abstract class HttpHandler {
         httpMethod = httpMethod.toUpperCase();
 
         if (!routes.containsKey(httpMethod)) {
-            routes.put(httpMethod, new ArrayList<>());
+            routes.put(httpMethod, new ArrayList<Route>());
         }
 
         routes.get(httpMethod).add(route);

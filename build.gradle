@@ -1,6 +1,8 @@
 apply plugin: "application"
 apply plugin: "java"
 
+sourceCompatibility = 1.7
+
 mainClassName = 'co.kuntz.sqliteEngine.Driver'
 
 repositories {
