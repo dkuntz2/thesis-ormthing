@@ -4,6 +4,10 @@ import java.sql.*;
 import java.util.*;
 import com.google.gson.Gson;
 
+/**
+ * A LocalDataMapper is a {@link DataMapper} that stores all data locally in a
+ * sqlite database.
+ */
 public class LocalDataMapper implements DataMapper {
     public static final String DEFAULT_NAME = "localDataMapper.db";
 

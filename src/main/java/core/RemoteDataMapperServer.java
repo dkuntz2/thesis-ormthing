@@ -4,11 +4,17 @@ import httpserver.*;
 import com.google.gson.Gson;
 import java.net.URLDecoder;
 
+/**
+ * A RemoteDataMapperServer is a relatively simple HTTP server which can have
+ * requests made of it to use a {@link DataMapper}. With a RemoteDataMapperServer
+ * running on a separate machine, one can use a {@link RemoteDataMapper} to
+ * access use it's data store.
+ */
 public class RemoteDataMapperServer extends HttpServer {
     public static final int DEFAULT_PORT = 8081;
     public static final String DEFAULT_NAME = "remote.db";
 
-    private DataMapper dataMapper;
+    private LocalDataMapper dataMapper;
     private Gson gson = new Gson();
 
     public RemoteDataMapperServer() {
@@ -39,7 +45,7 @@ public class RemoteDataMapperServer extends HttpServer {
                 try {
                     String itemName = request.getParam("item");
                     String obj = URLDecoder.decode(request.getParam("object"), "UTF-8");
-                    boolean added = ((LocalDataMapper) dataMapper).putRaw(itemName, obj);
+                    boolean added = dataMapper.putRaw(itemName, obj);
 
                     response.setBody(gson.toJson(added));
                 } catch (Throwable t) {
@@ -60,9 +66,5 @@ public class RemoteDataMapperServer extends HttpServer {
                 response.setBody(gson.toJson(dataMapper.getAll()));
             }
         });
-    }
-
-    public void purgeData() {
-        ((LocalDataMapper) dataMapper).purge();
     }
 }

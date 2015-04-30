@@ -13,6 +13,10 @@ import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * A RemoteDataMapper is a {@link DataMapper} which stores data on a separate
+ * server, running a {@link RemoteDataMapperServer}.
+ */
 public class RemoteDataMapper implements DataMapper {
     private Gson gson = new Gson();
     private String serverAddr;
