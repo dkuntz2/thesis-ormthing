@@ -35,11 +35,15 @@ public class RemoteDataMapperServer extends HttpServer {
 
         post(new Route("/put/{item}") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
-                String itemName = request.getParam("item");
-                String obj = URLDecoder.decode(request.getParam("object"));
-                ((LocalDataMapper) dataMapper).putRaw(itemName, obj);
+                try {
+                    String itemName = request.getParam("item");
+                    String obj = URLDecoder.decode(request.getParam("object"), "UTF-8");
+                    ((LocalDataMapper) dataMapper).putRaw(itemName, obj);
 
-                response.noContent();
+                    response.noContent();
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
         });
 

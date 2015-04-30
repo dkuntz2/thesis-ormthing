@@ -2,15 +2,18 @@ package co.kuntz.sqliteEngine.core;
 
 import java.util.Map;
 import java.util.HashMap;
+
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
 import java.net.URL;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class RemoteDataMapper extends DataMapper {
+public class RemoteDataMapper implements DataMapper {
     private Gson gson = new Gson();
     private String serverAddr;
 
@@ -43,7 +46,6 @@ public class RemoteDataMapper extends DataMapper {
             if ((method.equals(RequestMethod.POST) || method.equals(RequestMethod.PUT)) && obj != null) {
                 connection.setDoOutput(true);
 
-                //String objString = URLEncoder.encode(gson.toJson(obj));
                 String objString = gson.toJson(obj);
                 OutputStream output = connection.getOutputStream();
 
@@ -104,8 +106,8 @@ public class RemoteDataMapper extends DataMapper {
     public Map<String, String> getAll() {
         String allString = remoteRequest(RequestMethod.GET, "getall");
 
-        HashMap<String, String> all = new HashMap<String,String>();
-        all = (HashMap<String, String>) gson.fromJson(allString, all.getClass());
+        Type hashMapType = new TypeToken<HashMap<String, String>>(){}.getType();
+        HashMap<String, String> all = gson.fromJson(allString, hashMapType);
 
         return all;
     }

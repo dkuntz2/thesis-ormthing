@@ -31,34 +31,13 @@ import java.util.Map;
  *      see based on how easy it is to do later.
  */
 
-public abstract class DataMapper {
-    private static DataMapper instance;
-
-    // FUCK!!!!
-    // TODO: find a better way to deal with this, and make it _not_ public
-    //       but it also needs to be able to be changed by a file outside of
-    //       this package......
-    public static DataMapperFactory factory;
-    public static String dbName;
-
-    public static DataMapper getInstance() {
-        if (instance == null) {
-            if (factory == null) {
-                throw new RuntimeException("No DataMapperFactory set!");
-            }
-
-            instance = factory.createMapper();
-        }
-
-        return instance;
-    }
-
+public interface DataMapper {
     // TODO: convert insert/delete to booleans?
-    public abstract void put(String itemName, Object obj);
-    public abstract Object get(String itemName, Class<?> klass);
-    public abstract String getString(String itemName);
-    public abstract void delete(String itemName);
-    public abstract Map<String, String> getAll();
+    public void put(String itemName, Object obj);
+    public Object get(String itemName, Class<?> klass);
+    public String getString(String itemName);
+    public void delete(String itemName);
+    public Map<String, String> getAll();
 
     public interface DataMapperFactory {
         public DataMapper createMapper();

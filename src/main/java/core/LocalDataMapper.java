@@ -4,7 +4,9 @@ import java.sql.*;
 import java.util.*;
 import com.google.gson.Gson;
 
-public class LocalDataMapper extends DataMapper {
+public class LocalDataMapper implements DataMapper {
+    public static final String DEFAULT_NAME = "localDataMapper.db";
+
     private Gson gson = new Gson();
     private Connection connection;
 
@@ -13,7 +15,7 @@ public class LocalDataMapper extends DataMapper {
     private PreparedStatement deleteStatement;
 
     private LocalDataMapper() {
-        this(DataMapper.dbName);
+        this(DEFAULT_NAME);
     }
 
     private LocalDataMapper(String dbName) {
@@ -46,7 +48,7 @@ public class LocalDataMapper extends DataMapper {
     }
 
     public static DataMapper.DataMapperFactory getDataMapperFactory() {
-        return getDataMapperFactory(DataMapper.dbName);
+        return getDataMapperFactory(DEFAULT_NAME);
     }
 
     public void put(String name, Object obj) {

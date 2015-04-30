@@ -20,3 +20,7 @@ test {
         showStandardStreams = true
     }
 }
+
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
