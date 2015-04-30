@@ -56,11 +56,11 @@ public class RemoteDataMapperTest {
     @Test
     public void testPrimitives() {
         // TODO: don't hard code these. Turn them into variables.
-        instance.put("one", 1);
-        instance.put("twotwo", 2.2);
-        instance.put("true", true);
-        instance.put("string", "Hi There!");
-        instance.put("char", 'c');
+        assertTrue(instance.put("one", 1));
+        assertTrue(instance.put("twotwo", 2.2));
+        assertTrue(instance.put("true", true));
+        assertTrue(instance.put("string", "Hi There!"));
+        assertTrue(instance.put("char", 'c'));
 
         int one = (int) instance.get("one", int.class);
         double twotwo = (double) instance.get("twotwo", double.class);
@@ -77,11 +77,11 @@ public class RemoteDataMapperTest {
 
     @Test
     public void testArrays() {
-        instance.put("ints", new int[] {1, 2, 3});
-        instance.put("doubles", new double[] {1.1, 2.2, 3.3});
-        instance.put("booleans", new boolean[] {true, false, true});
-        instance.put("strings", new String[] {"first", "second", "third"});
-        instance.put("chars", new char[] {'a', 'b', 'c'});
+        assertTrue(instance.put("ints", new int[] {1, 2, 3}));
+        assertTrue(instance.put("doubles", new double[] {1.1, 2.2, 3.3}));
+        assertTrue(instance.put("booleans", new boolean[] {true, false, true}));
+        assertTrue(instance.put("strings", new String[] {"first", "second", "third"}));
+        assertTrue(instance.put("chars", new char[] {'a', 'b', 'c'}));
 
         int[] ints = (int[]) instance.get("ints", int[].class);
         double[] doubles = (double[]) instance.get("doubles", double[].class);
@@ -129,7 +129,7 @@ public class RemoteDataMapperTest {
         a.map.put(1, "Hello World");
         a.map.put(2, "Goodbye World");
 
-        instance.put("junk", a);
+        assertTrue(instance.put("junk", a));
 
         // FUCK YOU JUNIT!
         assertTrue(a.equals(instance.get("junk", BundleOfJunk.class)));
@@ -137,8 +137,8 @@ public class RemoteDataMapperTest {
 
     @Test
     public void testDeletion() {
-        instance.put("deleteme", "whotfcares?");
-        instance.delete("deleteme");
+        assertTrue(instance.put("deleteme", "whotfcares?"));
+        assertTrue(instance.delete("deleteme"));
 
         assertNull(instance.get("deleteme", String.class));
         assertNull(instance.getString("deleteme"));
