@@ -25,7 +25,7 @@ public class RemoteDataMapper implements DataMapper {
         DELETE, GET, POST, PUT;
     }
 
-    private RemoteDataMapper(String serverUrl, int serverPort) {
+    RemoteDataMapper(String serverUrl, int serverPort) {
         serverAddr = serverUrl + ":" + serverPort + "/";
     }
 
