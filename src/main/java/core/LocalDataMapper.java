@@ -22,7 +22,7 @@ public class LocalDataMapper implements DataMapper {
         this(DEFAULT_NAME);
     }
 
-    private LocalDataMapper(String dbName) {
+    public LocalDataMapper(String dbName) {
         try {
             Class.forName("org.sqlite.JDBC");
 
@@ -43,17 +43,6 @@ public class LocalDataMapper implements DataMapper {
         }
     }
 
-    public static DataMapper.DataMapperFactory getDataMapperFactory(final String name) {
-        return new DataMapper.DataMapperFactory() {
-            @Override public DataMapper createMapper() {
-                return new LocalDataMapper(name);
-            }
-        };
-    }
-
-    public static DataMapper.DataMapperFactory getDataMapperFactory() {
-        return getDataMapperFactory(DEFAULT_NAME);
-    }
 
     public boolean put(String name, Object obj) {
         return putRaw(name, gson.toJson(obj));

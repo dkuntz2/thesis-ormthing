@@ -28,7 +28,7 @@ public class RemoteDataMapperServer extends HttpServer {
     public RemoteDataMapperServer(String name, int port) {
         super(port, "Remote Data Mapper Server", "0.0.1", "");
 
-        dataMapper = (LocalDataMapper) LocalDataMapper.getDataMapperFactory(name).createMapper();
+        dataMapper = new LocalDataMapper(name);
 
         get(new Route("/get/{item}") {
             @Override public void handle(HttpRequest request, HttpResponse response) {

@@ -18,7 +18,7 @@ public class LocalDataMapperTest {
 
     @Before
     public void setup() {
-        instance = LocalDataMapper.getDataMapperFactory(":memory:").createMapper();
+        instance = new LocalDataMapper(":memory:");
     }
 
     @Test

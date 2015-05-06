@@ -25,21 +25,14 @@ public class RemoteDataMapper implements DataMapper {
         DELETE, GET, POST, PUT;
     }
 
-    RemoteDataMapper(String serverUrl, int serverPort) {
+    public RemoteDataMapper(String serverUrl, int serverPort) {
         serverAddr = serverUrl + ":" + serverPort + "/";
     }
 
-    public static DataMapper.DataMapperFactory getDataMapperFactory(final String serverUrl, final int port) {
-        return new DataMapper.DataMapperFactory() {
-            @Override public DataMapper createMapper() {
-                return new RemoteDataMapper(serverUrl, port);
-            }
-        };
+    public RemoteDataMapper() {
+        this("http://localhost", RemoteDataMapperServer.DEFAULT_PORT);
     }
 
-    public static DataMapper.DataMapperFactory getDataMapperFactory() {
-        return getDataMapperFactory("http://localhost", RemoteDataMapperServer.DEFAULT_PORT);
-    }
 
     private String remoteRequest(RequestMethod method, String address, Object obj) {
         try {

@@ -23,11 +23,11 @@ public class RemoteCachedDataMapper extends RemoteDataMapper {
 
     private Gson gson = new Gson();
 
-    private RemoteCachedDataMapper(String serverUrl, int serverPort) {
+    public RemoteCachedDataMapper(String serverUrl, int serverPort) {
         this(DEFAULT_DB_NAME, serverUrl, serverPort);
     }
 
-    private RemoteCachedDataMapper(String dbName, String serverUrl, int serverPort) {
+    public RemoteCachedDataMapper(String dbName, String serverUrl, int serverPort) {
         super(serverUrl, serverPort);
 
         try {
@@ -49,16 +49,6 @@ public class RemoteCachedDataMapper extends RemoteDataMapper {
         }
     }
 
-    // TODO: switch away from DataMapperFactory stuff to just using public constructors.
-    //       I'm 90% sure there isn't anything in these that's not just calling
-    //       constructors.
-    public static DataMapper.DataMapperFactory getDataMapperFactory(final String serverUrl, final int port) {
-        return new DataMapper.DataMapperFactory() {
-            @Override public DataMapper createMapper() {
-                return new RemoteCachedDataMapper(serverUrl, port);
-            }
-        };
-    }
 
     public boolean put(String itemName, Object obj) {
         try {

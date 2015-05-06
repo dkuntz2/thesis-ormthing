@@ -11,8 +11,4 @@ public interface DataMapper {
     public String getString(String itemName);
     public boolean delete(String itemName);
     public Map<String, String> getAll();
-
-    public interface DataMapperFactory {
-        public DataMapper createMapper();
-    }
 }

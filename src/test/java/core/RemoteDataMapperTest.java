@@ -49,7 +49,7 @@ public class RemoteDataMapperTest {
 
     @Before
     public void setup() {
-        instance = RemoteDataMapper.getDataMapperFactory().createMapper();
+        instance = new RemoteDataMapper();
     }
 
 
