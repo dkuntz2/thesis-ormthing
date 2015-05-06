@@ -1,7 +1,7 @@
 package co.kuntz.sqliteEngine.tests.core;
 
 import co.kuntz.sqliteEngine.core.DataMapper;
-import co.kuntz.sqliteEngine.core.RemoteDataMapper;
+import co.kuntz.sqliteEngine.core.RemoteCachedDataMapper;
 import co.kuntz.sqliteEngine.core.LocalDataMapper;
 import co.kuntz.sqliteEngine.core.RemoteDataMapperServer;
 
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RemoteDataMapperTest {
-    public static final int TEST_PORT = 8081;
+public class RemoteCachedDataMapperTest {
+    public static final int TEST_PORT = 8082;
 
     private static RemoteDataMapperServer server;
     private static Thread serverThread;
@@ -51,7 +51,7 @@ public class RemoteDataMapperTest {
 
     @Before
     public void setup() {
-        instance = new RemoteDataMapper("http://localhost", TEST_PORT);
+        instance = new RemoteCachedDataMapper(":memory:", "http://localhost", TEST_PORT);
     }
 
 
