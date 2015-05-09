@@ -108,4 +108,12 @@ public class RemoteDataMapper implements DataMapper {
 
         return all;
     }
+
+    public Map<String, String> startsWithRaw(String prefix) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public Map<String, Object> startsWith(String prefix, Class<?> klass) {
+        throw new RuntimeException("Not implemented");
+    }
 }

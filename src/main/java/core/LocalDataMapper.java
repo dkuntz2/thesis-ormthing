@@ -16,6 +16,7 @@ public class LocalDataMapper implements DataMapper {
 
     private PreparedStatement insertStatement;
     private PreparedStatement retrieveStatement;
+    private PreparedStatement likeStatement;
     private PreparedStatement deleteStatement;
 
     private LocalDataMapper() {
@@ -37,6 +38,7 @@ public class LocalDataMapper implements DataMapper {
 
             insertStatement = connection.prepareStatement("insert into items values(?, ?)");
             retrieveStatement = connection.prepareStatement("select name, object from items where name = ?");
+            likeStatement = connection.prepareStatement("select name, object from items where name like ?");
             deleteStatement = connection.prepareStatement("delete from items where name = ?");
         } catch (Throwable t) {
             throw new RuntimeException(t);
@@ -44,6 +46,7 @@ public class LocalDataMapper implements DataMapper {
     }
 
 
+    @Override
     public boolean put(String name, Object obj) {
         return putRaw(name, gson.toJson(obj));
     }
@@ -58,6 +61,7 @@ public class LocalDataMapper implements DataMapper {
         }
     }
 
+    @Override
     public Object get(String name, Class<?> klass) {
         try {
             retrieveStatement.setString(1, name);
@@ -72,6 +76,7 @@ public class LocalDataMapper implements DataMapper {
         }
     }
 
+    @Override
     public String getString(String name) {
         try {
             retrieveStatement.setString(1, name);
@@ -86,6 +91,7 @@ public class LocalDataMapper implements DataMapper {
         }
     }
 
+    @Override
     public boolean delete(String itemName) {
         try {
             deleteStatement.setString(1, itemName);
@@ -95,6 +101,7 @@ public class LocalDataMapper implements DataMapper {
         }
     }
 
+    @Override
     public Map<String, String> getAll() {
         try {
             Statement statement = connection.createStatement();
@@ -111,13 +118,32 @@ public class LocalDataMapper implements DataMapper {
         }
     }
 
-    public void purge() {
+    @Override
+    public Map<String, String> startsWithRaw(String prefix) {
         try {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate("drop table items");
-            stmt.executeUpdate("create table if not exists items(name text primary key, object text)");
+            likeStatement.setString(1, prefix + "%");
+            ResultSet query = likeStatement.executeQuery();
+
+            Map<String, String> results = new HashMap<>();
+            while (query.next()) {
+                results.put(query.getString("name"), query.getString("object"));
+            }
+
+            return results;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    @Override
+    public Map<String, Object> startsWith(String prefix, Class<?> klass) {
+        Map<String, String> raw = startsWithRaw(prefix);
+
+        Map<String, Object> results = new HashMap<>();
+        for (Map.Entry<String, String> entry : raw.entrySet()) {
+            results.put(entry.getKey(), gson.fromJson(entry.getValue(), klass));
+        }
+
+        return results;
     }
 }
