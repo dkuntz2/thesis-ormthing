@@ -24,8 +24,10 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
 
     private PreparedStatement insertStatement;
     private PreparedStatement retrieveStatement;
+    private PreparedStatement likeStatement;
     private PreparedStatement deleteStatement;
     private PreparedStatement updateStatement;
+    private PreparedStatement prefixQueryStatement;
 
     public AbstractRemoteCachedDataMapper(String serverUrl, int serverPort) {
         super(serverUrl, serverPort);
@@ -39,11 +41,14 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
         try {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("create table if not exists items(name text primary key, object text, lastUpdate bigint)");
+            stmt.executeUpdate("create table if not exists prefixQuery(prefix text primary key, lastUpdate bigint)");
 
             insertStatement = connection.prepareStatement("insert into items values(?, ?, ?)");
             retrieveStatement = connection.prepareStatement("select name, object, lastUpdate from items where name = ?");
+            likeStatement = connection.prepareStatement("select name, object from items where name like ?");
             deleteStatement = connection.prepareStatement("delete from items where name = ?");
             updateStatement = connection.prepareStatement("update items set object = ?, lastUpdate = ? where name = ?");
+            prefixQueryStatement = connection.prepareStatement("select prefix, lastUpdate from prefixQuery where prefix = ?");
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -93,9 +98,7 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
             String remoteObj = super.getString(item);
 
             if (hasResult) {
-                updateStatement.setString(1, remoteObj);
-                updateStatement.setLong(2, currentTime);
-                updateStatement.setString(3, item);
+                updateLocal(item, remoteObj, currentTime);
             } else {
                 insertLocal(item, remoteObj, currentTime);
             }
@@ -138,6 +141,18 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
         }
     }
 
+    private boolean updateLocal(String itemName, String obj, long currentTime) {
+        try {
+            updateStatement.setString(1, obj);
+            updateStatement.setLong(2, currentTime);
+            updateStatement.setString(3, itemName);
+
+            return updateStatement.executeUpdate() == 1;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
     @Override
     public Map<String, String> getAll() {
         try {
@@ -154,6 +169,48 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
                 }
 
                 results.put(query.getString("name"), query.getString("object"));
+            }
+
+            return results;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    @Override
+    public Map<String, String> startsWithRaw(String prefix) {
+        try {
+            long currentTime = getCurrentTime();
+
+            likeStatement.setString(1, prefix + "%");
+            ResultSet localQuery = likeStatement.executeQuery();
+
+            Map<String, String> results = new HashMap<>();
+            while (localQuery.next()) {
+                results.put(localQuery.getString("name"), localQuery.getString("object"));
+            }
+
+            prefixQueryStatement.setString(1, prefix);
+            ResultSet query = prefixQueryStatement.executeQuery();
+
+            boolean grabRemote = false;
+            if (query.next()) {
+                grabRemote = (currentTime - query.getLong("lastUpdate")) > outdated_delta;
+            }
+
+            if (grabRemote) {
+                Map<String, String> remoteResults = super.startsWithRaw(prefix);
+                for (Map.Entry<String, String> entry : remoteResults.entrySet()) {
+                    String localVal = results.get(entry.getKey());
+
+                    if (localVal == null) {
+                        insertLocal(entry.getKey(), entry.getValue(), currentTime);
+                        results.put(entry.getKey(), entry.getValue());
+                    } else if (!localVal.equals(entry.getValue())) {
+                        updateLocal(entry.getKey(), entry.getValue(), currentTime);
+                        results.put(entry.getKey(), entry.getValue());
+                    }
+                }
             }
 
             return results;

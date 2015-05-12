@@ -30,22 +30,28 @@ public class RemoteDataMapperServer extends HttpServer {
 
         dataMapper = new LocalDataMapper(name);
 
-        get(new Route("/get/{item}") {
+        get(new Route("/get") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
-                String item = dataMapper.getString(request.getParam("item"));
-                if (item == null) {
-                    item = "null";
+                try {
+                    String rawName = URLDecoder.decode(request.getParam("object"), "UTF-8");
+                    String itemName = gson.fromJson(rawName, String.class);
+                    String item = dataMapper.getString(itemName);
+                    if (item == null) {
+                        item = "null";
+                    }
+                    response.setBody(item);
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
                 }
-                response.setBody(item);
             }
         });
 
-        post(new Route("/put/{item}") {
+        post(new Route("/put") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
                 try {
-                    String itemName = request.getParam("item");
-                    String obj = URLDecoder.decode(request.getParam("object"), "UTF-8");
-                    boolean added = dataMapper.putRaw(itemName, obj);
+                    String rawPair = URLDecoder.decode(request.getParam("object"), "UTF-8");
+                    RemoteDataMapper.Pair pair = gson.fromJson(rawPair, RemoteDataMapper.Pair.class);
+                    boolean added = dataMapper.putRaw(pair.key, pair.value);
 
                     response.setBody(gson.toJson(added));
                 } catch (Throwable t) {
@@ -54,16 +60,35 @@ public class RemoteDataMapperServer extends HttpServer {
             }
         });
 
-        delete(new Route("/delete/{item}") {
+        delete(new Route("/delete") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
-                boolean deleted = dataMapper.delete(request.getParam("item"));
-                response.setBody(gson.toJson(deleted));
+                try {
+                    String rawName = URLDecoder.decode(request.getParam("object"), "UTF-8");
+                    String itemName = gson.fromJson(rawName, String.class);
+                    boolean deleted = dataMapper.delete(itemName);
+                    response.setBody(gson.toJson(deleted));
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
         });
 
         get(new Route("/getall") {
             @Override public void handle(HttpRequest request, HttpResponse response) {
                 response.setBody(gson.toJson(dataMapper.getAll()));
+            }
+        });
+
+        get(new Route("/startsWith") {
+            @Override public void handle(HttpRequest request, HttpResponse response) {
+                try {
+                    String obj = URLDecoder.decode(request.getParam("object"), "UTF-8");
+                    String prefix = gson.fromJson(obj, String.class);
+
+                    response.setBody(gson.toJson(dataMapper.startsWithRaw(prefix)));
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
         });
     }

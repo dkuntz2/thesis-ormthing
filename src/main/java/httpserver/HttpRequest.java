@@ -198,11 +198,11 @@ public class HttpRequest implements Runnable {
         }
 
 
-        /*  If the client sent over a POST request, there's *probably* still data
+        /*  If the client sent over a POST, PUT, or DELETE request, there's *probably* still data
             in the stream. This reads in only the number of chars specified in the
             "Content-Length" header.
             */
-        if (getRequestType().equals(POST_REQUEST_TYPE) && getHeaders().containsKey("Content-Length")) {
+        if ((getRequestType().equals(POST_REQUEST_TYPE) || getRequestType().equals(DELETE_REQUEST_TYPE) || getRequestType().equals(PUT_REQUEST_TYPE)) && getHeaders().containsKey("Content-Length")) {
             int contentLength = Integer.parseInt(getHeaders().get("Content-Length"));
             StringBuilder b = new StringBuilder();
 

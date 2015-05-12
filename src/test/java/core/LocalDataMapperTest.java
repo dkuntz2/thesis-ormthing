@@ -138,12 +138,6 @@ public class LocalDataMapperTest {
 
         // GAH!!!! JAVA!!!!!
         Map<String, String> usersGet = (Map<String, String>) (Map) instance.startsWith("users/", String.class);
-
-        System.out.println("usersGet entries: (empty? " + usersGet.isEmpty() + ")");
-        for (Map.Entry<String, String> entry : usersGet.entrySet()) {
-            System.out.println("\t" + entry.getKey() + " : " + entry.getValue());
-        }
-
         assertTrue(usersMap.equals(usersGet));
     }
 }

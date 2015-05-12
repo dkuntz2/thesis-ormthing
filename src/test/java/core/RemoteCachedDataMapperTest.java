@@ -151,4 +151,27 @@ public class RemoteCachedDataMapperTest {
         assertNull(instance.getString("notathing"));
         assertNull(instance.get("notathing", Object.class));
     }
+
+    @Test
+    public void testStartsWith() {
+        HashMap<String, String> usersMap = new HashMap<String, String>();
+        usersMap.put("users/don", "Don");
+        usersMap.put("users/james", "James");
+        usersMap.put("users/garfunkel", "Art");
+        usersMap.put("users/anotherThing", "I believe in symmetry?");
+
+        for (Map.Entry<String, String> entry : usersMap.entrySet()) {
+            assertTrue(instance.put(entry.getKey(), entry.getValue()));
+        }
+
+        // add in more junk, to make sure DataMapper.startsWith doesn't return
+        // everything
+        assertTrue(instance.put("blarg", "yes"));
+        assertTrue(instance.put("yeerrrrggg", 1233));
+        assertTrue(instance.put("you", "are the 1 that i adore?"));
+
+        // GAH!!!! JAVA!!!!!
+        Map<String, String> usersGet = (Map<String, String>) (Map) instance.startsWith("users/", String.class);
+        assertTrue(usersMap.equals(usersGet));
+    }
 }
