@@ -30,7 +30,7 @@ public class RemoteCachedDataMapper extends AbstractRemoteCachedDataMapper {
         try {
             Class.forName("org.sqlite.JDBC");
 
-            if (!dbName.equals(":memory:") && dbName.endsWith(".db")) {
+            if (!dbName.equals(":memory:") && !dbName.endsWith(".db")) {
                 dbName = dbName + ".db";
             }
             setConnection(DriverManager.getConnection("jdbc:sqlite:" + dbName));

@@ -59,11 +59,17 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
     public boolean put(String itemName, Object obj) {
         try {
             long currentTime = getCurrentTime();
-            boolean remotePut = super.put(itemName, obj);
 
-            if (!remotePut) {
+            try {
+                boolean remotePut = super.put(itemName, obj);
+
+                if (!remotePut) {
+                    return false;
+                }
+            } catch (Throwable t) {
                 return false;
             }
+
 
             return insertLocal(itemName, gson.toJson(obj), currentTime);
 
@@ -95,15 +101,19 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
                 obj = result.getString("object");
             }
 
-            String remoteObj = super.getString(item);
+            try {
+                String remoteObj = super.getString(item);
 
-            if (hasResult) {
-                updateLocal(item, remoteObj, currentTime);
-            } else {
-                insertLocal(item, remoteObj, currentTime);
+                if (hasResult) {
+                    updateLocal(item, remoteObj, currentTime);
+                } else {
+                    insertLocal(item, remoteObj, currentTime);
+                }
+
+                return remoteObj;
+            } catch (Throwable t) {
+                return obj;
             }
-
-            return remoteObj;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -115,9 +125,13 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
     }
 
     public boolean delete(String item) {
-        boolean remoteDelete = super.delete(item);
+        try {
+            boolean remoteDelete = super.delete(item);
 
-        if (!remoteDelete) {
+            if (!remoteDelete) {
+                return false;
+            }
+        } catch (Throwable t) {
             return false;
         }
 
@@ -193,23 +207,27 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
             prefixQueryStatement.setString(1, prefix);
             ResultSet query = prefixQueryStatement.executeQuery();
 
-            boolean grabRemote = false;
+            boolean grabRemote = true;
             if (query.next()) {
                 grabRemote = (currentTime - query.getLong("lastUpdate")) > outdated_delta;
             }
 
             if (grabRemote) {
-                Map<String, String> remoteResults = super.startsWithRaw(prefix);
-                for (Map.Entry<String, String> entry : remoteResults.entrySet()) {
-                    String localVal = results.get(entry.getKey());
+                try {
+                    Map<String, String> remoteResults = super.startsWithRaw(prefix);
+                    for (Map.Entry<String, String> entry : remoteResults.entrySet()) {
+                        String localVal = results.get(entry.getKey());
 
-                    if (localVal == null) {
-                        insertLocal(entry.getKey(), entry.getValue(), currentTime);
-                        results.put(entry.getKey(), entry.getValue());
-                    } else if (!localVal.equals(entry.getValue())) {
-                        updateLocal(entry.getKey(), entry.getValue(), currentTime);
-                        results.put(entry.getKey(), entry.getValue());
+                        if (localVal == null) {
+                            insertLocal(entry.getKey(), entry.getValue(), currentTime);
+                            results.put(entry.getKey(), entry.getValue());
+                        } else if (!localVal.equals(entry.getValue())) {
+                            updateLocal(entry.getKey(), entry.getValue(), currentTime);
+                            results.put(entry.getKey(), entry.getValue());
+                        }
                     }
+                } catch (Throwable t) {
+                    // meh?
                 }
             }
 
@@ -217,6 +235,17 @@ public abstract class AbstractRemoteCachedDataMapper extends RemoteDataMapper {
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    public Map<String, Object> startsWith(String prefix, Class<?> klass) {
+        Map<String, String> raw = startsWithRaw(prefix);
+
+        Map<String, Object> results = new HashMap<>();
+        for (Map.Entry<String, String> entry : raw.entrySet()) {
+            results.put(entry.getKey(), gson.fromJson(entry.getValue(), klass));
+        }
+
+        return results;
     }
 
 

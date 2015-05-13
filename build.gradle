@@ -29,3 +29,16 @@ compileJava {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
 }
+
+
+jar {
+	manifest {
+		attributes 	'Main-Class': 'co.kuntz.sqliteEngine.Driver',
+					'Implementation-Title': 'ormthing'
+	}
+
+	baseName = 'ormthing'
+	from {
+		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+}
